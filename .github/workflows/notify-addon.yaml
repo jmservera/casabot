@@ -1,0 +1,18 @@
+# .github/workflows/notify-addon.yaml in jmservera/casabot
+name: Notify Add-on Repo
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger add-on build
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.ADDON_REPO_TOKEN }}
+          repository: jmservera/addon-casabot
+          event-type: casabot-release
+          client-payload: '{"release_tag": "${{ github.event.release.tag_name }}"}'
