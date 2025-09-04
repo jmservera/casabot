@@ -90,14 +90,3 @@ jobs:
         draft: false
         prerelease: false
         generate_release_notes: true
-  dispatch:
-    needs: release
-    runs-on: ubuntu-latest
-    steps:
-    - name: Trigger add-on build
-      uses: peter-evans/repository-dispatch@v3
-      with:
-        token: ${{ secrets.ADDON_REPO_TOKEN }}
-        repository: ${{ github.repository_owner }}/addon-casabot
-        event-type: casabot-release
-        client-payload: '{"release_tag": "${{ github.event.release.tag_name }}"}'
