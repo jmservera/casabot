@@ -3,12 +3,12 @@ name: Build and Release
 on:
   push:
     branches: [main]
-    tags: ['v*']
+    # tags: ['v*']
   pull_request:
     branches: [main]
   workflow_dispatch:
   release:
-    types: [created]
+    types: [created, released, published]
 
 env:
   DOTNET_VERSION: '8.0.x'
@@ -92,3 +92,16 @@ jobs:
         draft: false
         prerelease: false
         generate_release_notes: true
+
+  dispatch:
+    needs: release
+  # Only run when the release has more than 2 assets (i.e., at least a third asset exists)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger add-on build
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.ADDON_REPO_TOKEN }}
+          repository: ${{ github.repository_owner }}/addon-casabot
+          event-type: casabot-release
+          client-payload: '{"release_tag": "${{ github.event.release.tag_name }}"}'
