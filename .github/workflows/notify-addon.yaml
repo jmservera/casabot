@@ -3,10 +3,7 @@ name: Notify Add-on Repo
 
 on:
   release:
-    types:
-      - published
-      - created
-      - edited
+    types: [created, published, edited, released]
 
 jobs:
   dispatch:
