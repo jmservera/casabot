@@ -6,6 +6,7 @@ import io
 import logging
 import os
 import sys
+from functools import partial
 from typing import Dict, List, Optional
 from urllib.parse import urlparse
 
@@ -35,7 +36,6 @@ class AzureOpenAISttEventHandler(AsyncEventHandler):
     ) -> None:
         super().__init__(*args, **kwargs)
         
-        self.wyoming_info = wyoming_info
         self.cli_args = cli_args
         self.client = None
         
@@ -248,7 +248,11 @@ async def main() -> None:
             # so the factory must accept (reader, writer) and pass them
             # to the handler constructor. The handler's __init__ accepts
             # *args/**kwargs and forwards them to the base AsyncEventHandler.
-            lambda reader, writer: AzureOpenAISttEventHandler(wyoming_info, cli_args, reader, writer)
+            partial(
+                AzureOpenAISttEventHandler,
+                wyoming_info,
+                cli_args
+            )
         )
     except KeyboardInterrupt:
         _LOGGER.info("Server stopped by user")
