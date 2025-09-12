@@ -18,6 +18,7 @@ from wyoming.info import AsrModel, AsrProgram, Attribution, Info
 from wyoming.server import AsyncEventHandler, AsyncServer
 
 from config_validator import validate_configuration, ConfigValidationError
+import __version__
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -219,9 +220,10 @@ async def main() -> None:
                         ),
                         installed=True,
                         languages=["auto"] if cli_args["language"] == "auto" else [cli_args["language"]],
-                        version= "1.0" # todo: fetch actual version if possible
+                        version= __version__
                     )
-                ]
+                ],
+                version= __version__
             )
         ]
     )
