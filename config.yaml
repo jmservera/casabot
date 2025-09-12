@@ -24,4 +24,4 @@ schema:
   language: str
   wyoming_uri: str
   debug: bool
-image: "ghcr.io/jmservera/casabot-wyoming-azure"
+# image: "ghcr.io/jmservera/casabot-wyoming-azure"
