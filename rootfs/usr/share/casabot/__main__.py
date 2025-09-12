@@ -244,7 +244,11 @@ async def main() -> None:
     
     try:
         await server.run(
-            lambda: AzureOpenAISttEventHandler(wyoming_info, cli_args)
+            # wyoming.server will call handler_factory(reader, writer)
+            # so the factory must accept (reader, writer) and pass them
+            # to the handler constructor. The handler's __init__ accepts
+            # *args/**kwargs and forwards them to the base AsyncEventHandler.
+            lambda reader, writer: AzureOpenAISttEventHandler(wyoming_info, cli_args, reader, writer)
         )
     except KeyboardInterrupt:
         _LOGGER.info("Server stopped by user")
