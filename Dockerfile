@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base-python:3.11-alpine3.18
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.21
 FROM $BUILD_FROM
 
 # Set shell
@@ -8,11 +8,14 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apk add --no-cache \
     curl \
     build-base \
-    linux-headers
+    linux-headers \
+    python3 \
+    python3-dev \
+    py3-pip
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install --no-cache-dir --break-system-packages -r /tmp/requirements.txt
 
 # Copy application code
 COPY rootfs /
