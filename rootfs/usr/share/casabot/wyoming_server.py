@@ -17,6 +17,8 @@ from wyoming.event import Event
 from wyoming.info import AsrModel, AsrProgram, Attribution, Info
 from wyoming.server import AsyncEventHandler, AsyncServer
 
+from config_validator import validate_configuration, ConfigValidationError
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -123,21 +125,45 @@ class AzureOpenAISttEventHandler(AsyncEventHandler):
     async def _transcribe_audio(self, audio_data: bytes) -> Optional[str]:
         """Transcribe audio using Azure OpenAI."""
         try:
+            if not audio_data:
+                _LOGGER.warning("Empty audio data provided for transcription")
+                return None
+                
+            if len(audio_data) < 1024:  # Less than 1KB might not be valid audio
+                _LOGGER.warning(f"Audio data too small: {len(audio_data)} bytes")
+                return None
+            
+            _LOGGER.debug(f"Processing audio data: {len(audio_data)} bytes")
+            
             # Create a file-like object for the audio
             audio_file = io.BytesIO(audio_data)
             audio_file.name = "audio.wav"  # OpenAI needs a filename
             
+            # Prepare transcription parameters
+            transcribe_params = {
+                "model": self.cli_args["model"],
+                "file": audio_file
+            }
+            
+            # Add language parameter if not auto-detection
+            if self.cli_args["language"] and self.cli_args["language"] != "auto":
+                transcribe_params["language"] = self.cli_args["language"]
+            
+            _LOGGER.debug(f"Calling Azure OpenAI with params: {list(transcribe_params.keys())}")
+            
             # Call Azure OpenAI transcription
             response = await asyncio.get_event_loop().run_in_executor(
                 None,
-                lambda: self.client.audio.transcriptions.create(
-                    model=self.cli_args["model"],
-                    file=audio_file,
-                    language=self.cli_args["language"] if self.cli_args["language"] != "auto" else None
-                )
+                lambda: self.client.audio.transcriptions.create(**transcribe_params)
             )
             
-            return response.text.strip() if response.text else None
+            if response and hasattr(response, 'text') and response.text:
+                result_text = response.text.strip()
+                _LOGGER.debug(f"Transcription successful: {len(result_text)} characters")
+                return result_text
+            else:
+                _LOGGER.warning("Empty response from Azure OpenAI")
+                return None
             
         except Exception as e:
             _LOGGER.error(f"Azure OpenAI transcription error: {e}")
@@ -165,12 +191,11 @@ async def main() -> None:
     }
     
     # Validate required configuration
-    if not cli_args["azure_openai_endpoint"]:
-        _LOGGER.error("AZURE_OPENAI_ENDPOINT environment variable is required")
-        sys.exit(1)
-        
-    if not cli_args["azure_openai_api_key"]:
-        _LOGGER.error("AZURE_OPENAI_API_KEY environment variable is required")
+    validation_errors = validate_configuration(cli_args)
+    if validation_errors:
+        for error in validation_errors:
+            _LOGGER.error(f"Configuration error: {error}")
+        _LOGGER.error("Cannot start server due to configuration errors")
         sys.exit(1)
     
     # Create Wyoming info

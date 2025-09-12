@@ -17,11 +17,16 @@ RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 # Copy application code
 COPY rootfs /
 
-# Make script executable
-RUN chmod a+x /usr/bin/run.sh
+# Make scripts executable
+RUN chmod a+x /usr/bin/run.sh && \
+    chmod a+x /usr/share/casabot/health_check.py
 
 # Set workdir
 WORKDIR /usr/share/casabot
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python3 /usr/share/casabot/health_check.py
 
 # Start script
 CMD ["/usr/bin/run.sh"]
