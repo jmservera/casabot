@@ -61,7 +61,7 @@ language: "auto"
 1. Go to **Settings** → **Voice assistants**
 2. Create or edit a voice assistant
 3. Set **Speech-to-text** to use Wyoming Protocol
-4. Configure the Wyoming URI: `tcp://localhost:10300`
+4. Configure the Wyoming URI: `tcp://localhost:11350`
 
 ## Verification
 

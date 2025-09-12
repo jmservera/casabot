@@ -35,12 +35,12 @@ def main():
     
     # Get Wyoming URI from environment or use default
     import os
-    wyoming_uri = os.getenv("WYOMING_URI", "tcp://0.0.0.0:10300")
+    wyoming_uri = os.getenv("WYOMING_URI", "tcp://0.0.0.0:11350")
     
     try:
         parsed = urlparse(wyoming_uri)
         host = parsed.hostname or "localhost"
-        port = parsed.port or 10300
+        port = parsed.port or 11350
         
         # Run health check
         is_healthy = asyncio.run(check_wyoming_server(host, port))

@@ -92,7 +92,7 @@ def validate_configuration(config: Dict) -> List[str]:
     if not validate_language_code(language):
         errors.append(f"Invalid language code: {language}")
     
-    wyoming_uri = config.get("wyoming_uri", "tcp://0.0.0.0:10300")
+    wyoming_uri = config.get("wyoming_uri", "tcp://0.0.0.0:11350")
     if not validate_wyoming_uri(wyoming_uri):
         errors.append(f"Invalid Wyoming URI: {wyoming_uri}")
     

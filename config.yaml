@@ -7,21 +7,19 @@ arch:
   - amd64
   - aarch64
 ports:
-  10300/tcp: 10300
+  11350/tcp: 11350
 options:
   azure_openai_endpoint: ""
   azure_openai_api_key: ""
   azure_openai_api_version: "2024-02-01"
-  model: "whisper-1"
-  language: "auto"
-  wyoming_uri: "tcp://0.0.0.0:10300"
+  model: "gpt-audio"
+  wyoming_uri: "tcp://0.0.0.0:11350"
   debug: false
 schema:
   azure_openai_endpoint: str
   azure_openai_api_key: password
   azure_openai_api_version: str
   model: str
-  language: str
   wyoming_uri: str
   debug: bool
 # image: "ghcr.io/jmservera/casabot-wyoming-azure"

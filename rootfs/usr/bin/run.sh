@@ -5,7 +5,6 @@ export AZURE_OPENAI_ENDPOINT=$(bashio::config 'azure_openai_endpoint')
 export AZURE_OPENAI_API_KEY=$(bashio::config 'azure_openai_api_key')
 export AZURE_OPENAI_API_VERSION=$(bashio::config 'azure_openai_api_version')
 export MODEL=$(bashio::config 'model')
-export LANGUAGE=$(bashio::config 'language')
 export WYOMING_URI=$(bashio::config 'wyoming_uri')
 export DEBUG=$(bashio::config 'debug')
 
@@ -13,7 +12,6 @@ export DEBUG=$(bashio::config 'debug')
 bashio::log.info "Starting CasaBot Wyoming Protocol Server..."
 bashio::log.info "Azure OpenAI Endpoint: ${AZURE_OPENAI_ENDPOINT}"
 bashio::log.info "Model: ${MODEL}"
-bashio::log.info "Language: ${LANGUAGE}"
 bashio::log.info "Wyoming URI: ${WYOMING_URI}"
 
 # Validate required configuration

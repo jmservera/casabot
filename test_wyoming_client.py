@@ -22,7 +22,7 @@ async def test_transcription():
     logging.basicConfig(level=logging.DEBUG)
     
     # Connect to the Wyoming server
-    client = AsyncClient("localhost", 10300)
+    client = AsyncClient("localhost", 11350)
     
     try:
         await client.connect()

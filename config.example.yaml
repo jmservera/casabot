@@ -19,8 +19,8 @@ model: "whisper-1"
 # or specify a language code like "en", "es", "fr", etc.
 language: "auto"
 
-# Optional: Wyoming protocol URI (default: tcp://0.0.0.0:10300)
-wyoming_uri: "tcp://0.0.0.0:10300"
+# Optional: Wyoming protocol URI (default: tcp://0.0.0.0:11350)
+wyoming_uri: "tcp://0.0.0.0:11350"
 
 # Optional: Enable debug logging (default: false)
 debug: false

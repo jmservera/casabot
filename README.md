@@ -28,7 +28,7 @@ A Home Assistant add-on that provides speech-to-text capabilities using Azure Op
 - **azure_openai_api_version**: API version (default: "2024-02-01")
 - **model**: Whisper model to use (default: "whisper-1")
 - **language**: Language for transcription (default: "auto" for automatic detection)
-- **wyoming_uri**: Wyoming protocol URI (default: "tcp://0.0.0.0:10300")
+- **wyoming_uri**: Wyoming protocol URI (default: "tcp://0.0.0.0:11350")
 - **debug**: Enable debug logging (default: false)
 
 ### Example Configuration
@@ -39,7 +39,7 @@ azure_openai_api_key: "your-api-key-here"
 azure_openai_api_version: "2024-02-01"
 model: "whisper-1"
 language: "en"
-wyoming_uri: "tcp://0.0.0.0:10300"
+wyoming_uri: "tcp://0.0.0.0:11350"
 debug: false
 ```
 
@@ -47,7 +47,7 @@ debug: false
 
 Once configured and started, the add-on will:
 
-1. Listen for audio streams via the Wyoming protocol on port 10300
+1. Listen for audio streams via the Wyoming protocol on port 11350
 2. Process audio using Azure OpenAI's speech-to-text API
 3. Return transcribed text through the Wyoming protocol
 
