@@ -218,7 +218,8 @@ async def main() -> None:
                             url="https://openai.com/"
                         ),
                         installed=True,
-                        languages=["auto"] if cli_args["language"] == "auto" else [cli_args["language"]]
+                        languages=["auto"] if cli_args["language"] == "auto" else [cli_args["language"]],
+                        version= "1.0" # todo: fetch actual version if possible
                     )
                 ]
             )
