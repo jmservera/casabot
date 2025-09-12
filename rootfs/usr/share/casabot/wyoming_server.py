@@ -18,7 +18,7 @@ from wyoming.info import AsrModel, AsrProgram, Attribution, Info
 from wyoming.server import AsyncEventHandler, AsyncServer
 
 from config_validator import validate_configuration, ConfigValidationError
-import __version__
+from . import __version__
 
 _LOGGER = logging.getLogger(__name__)
 
