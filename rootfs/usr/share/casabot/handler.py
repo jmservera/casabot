@@ -9,7 +9,7 @@ from wyoming.asr import Transcribe, Transcript
 from wyoming.audio import AudioChunk, AudioStart, AudioStop
 from wyoming.error import Error
 from wyoming.event import Event
-from wyoming.info import  Info
+from wyoming.info import  Info, Describe
 from wyoming.server import AsyncEventHandler
 
 _LOGGER = logging.getLogger(__name__)
@@ -21,6 +21,7 @@ class AzureOpenAISttEventHandler(AsyncEventHandler):
         self,
         wyoming_info: Info,
         cli_args: Dict,
+        client: openai.AzureOpenAI,
         *args,
         **kwargs,
     ) -> None:
@@ -28,31 +29,18 @@ class AzureOpenAISttEventHandler(AsyncEventHandler):
         
         self.cli_args = cli_args
         self.wyoming_info_event = wyoming_info.event()
-        self.client = None
+        self.client = client
         
         # Audio buffer
         self.audio_buffer = io.BytesIO()
         self.audio_bytes_left = 0
+        _LOGGER.debug("AzureOpenAISttEventHandler initialized")
         
-        # Initialize OpenAI client
-        self._init_openai_client()
-
-    def _init_openai_client(self):
-        """Initialize the OpenAI client for Azure."""
-        try:
-            self.client = openai.AzureOpenAI(
-                azure_endpoint=self.cli_args["azure_openai_endpoint"],
-                api_key=self.cli_args["azure_openai_api_key"],
-                api_version=self.cli_args["azure_openai_api_version"]
-            )
-            _LOGGER.info("Azure OpenAI client initialized successfully")
-        except Exception as e:
-            _LOGGER.error(f"Failed to initialize Azure OpenAI client: {e}")
-            raise
-
     async def handle_event(self, event: Event) -> bool:
         """Handle Wyoming protocol events."""
         
+        _LOGGER.debug("Received event: %s", event.type)
+
         if AudioStart.is_type(event.type):
             # Start of audio stream
             audio_start = AudioStart.from_event(event)
@@ -110,6 +98,11 @@ class AzureOpenAISttEventHandler(AsyncEventHandler):
         if Transcribe.is_type(event.type):
             # Direct transcription request (if supported)
             _LOGGER.debug("Transcribe event received")
+            return True
+
+        if Describe.is_type(event.type):
+            await self.write_event(self.wyoming_info_event)
+            _LOGGER.debug("Sent info")
             return True
 
         return True

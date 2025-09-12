@@ -8,6 +8,7 @@ import os
 import sys
 from functools import partial
 from urllib.parse import urlparse
+import openai
 
 from wyoming.info import AsrModel, AsrProgram, Attribution, Info
 from wyoming.server import AsyncServer
@@ -27,7 +28,7 @@ async def main() -> None:
     log_level = logging.DEBUG if os.getenv("DEBUG", "false").lower() == "true" else logging.INFO
     logging.basicConfig(
         level=log_level,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        format=logging.BASIC_FORMAT
     )
     
     # Get configuration from environment
@@ -76,7 +77,20 @@ async def main() -> None:
             )
         ]
     )
-    
+
+    """Initialize the OpenAI client for Azure."""
+    try:
+        client = openai.AzureOpenAI(
+                    azure_endpoint=cli_args["azure_openai_endpoint"],
+                    api_key=cli_args["azure_openai_api_key"],
+                    api_version=cli_args["azure_openai_api_version"]
+                )
+        _LOGGER.info("Azure OpenAI client initialized successfully")
+    except Exception as e:
+        _LOGGER.error(f"Failed to initialize Azure OpenAI client: {e}")
+        raise
+
+
     _LOGGER.info("Starting CasaBot Wyoming Protocol Server")
     _LOGGER.info(f"Wyoming URI: {cli_args['wyoming_uri']}")
     _LOGGER.info(f"Azure OpenAI Endpoint: {cli_args['azure_openai_endpoint']}")
@@ -85,8 +99,6 @@ async def main() -> None:
     
     # Parse Wyoming URI
     parsed_uri = urlparse(cli_args["wyoming_uri"])
-    host = parsed_uri.hostname or "0.0.0.0"
-    port = parsed_uri.port or 11350
     
     # Create and run server
     server = AsyncServer.from_uri(cli_args["wyoming_uri"])
@@ -98,8 +110,9 @@ async def main() -> None:
         # *args/**kwargs and forwards them to the base AsyncEventHandler.
         partial(
             AzureOpenAISttEventHandler,
-            wyoming_info,
-            cli_args
+            wyoming_info,            
+            cli_args,
+            client
         )
     )
 
