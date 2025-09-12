@@ -28,5 +28,5 @@ if bashio::var.is_empty "${AZURE_OPENAI_API_KEY}"; then
 fi
 
 # Start the Wyoming protocol server
-cd /usr/share/casabot
-python3 -u wyoming_server.py
+cd /usr/share/
+python3 -m casabot
