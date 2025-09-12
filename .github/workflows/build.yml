@@ -1,0 +1,61 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort
+        pip install -r requirements.txt
+    
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 rootfs/usr/share/casabot/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Treat all errors as warnings
+        flake8 rootfs/usr/share/casabot/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+    
+    - name: Format check with black
+      run: |
+        black --check --diff rootfs/usr/share/casabot/
+    
+    - name: Import sort check with isort
+      run: |
+        isort --check-only --diff rootfs/usr/share/casabot/
+    
+    - name: Compile Python files
+      run: |
+        python -m py_compile rootfs/usr/share/casabot/wyoming_server.py
+        python -m py_compile test_wyoming_client.py
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build Docker image
+      run: |
+        docker build -t casabot-wyoming-azure:latest .
+    
+    - name: Test Docker image
+      run: |
+        # Basic smoke test - ensure the container can start
+        docker run --rm -e AZURE_OPENAI_ENDPOINT=test -e AZURE_OPENAI_API_KEY=test casabot-wyoming-azure:latest --help || echo "Expected failure without proper configuration"

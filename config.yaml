@@ -1,0 +1,25 @@
+name: "CasaBot - Wyoming Protocol for Azure OpenAI"
+description: "A Wyoming protocol server for speech-to-text using Azure OpenAI"
+version: "1.0.0"
+slug: casabot-wyoming-azure
+init: false
+arch:
+  - amd64
+  - aarch64
+ports:
+  11350/tcp: 11350
+options:
+  azure_openai_endpoint: ""
+  azure_openai_api_key: ""
+  azure_openai_api_version: "2024-02-01"
+  model: "gpt-audio"
+  wyoming_uri: "tcp://0.0.0.0:11350"
+  debug: false
+schema:
+  azure_openai_endpoint: str
+  azure_openai_api_key: password
+  azure_openai_api_version: str
+  model: str
+  wyoming_uri: str
+  debug: bool
+# image: "ghcr.io/jmservera/casabot-wyoming-azure"
